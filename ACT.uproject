@@ -23,6 +23,10 @@
 		{
 			"Name": "Synthesis",
 			"Enabled": true
+		},
+		{
+			"Name": "SteamVR",
+			"Enabled": false
 		}
 	]
 }

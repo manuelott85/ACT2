@@ -69,13 +69,9 @@ void AACTProjectile_Base::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	DrawDebugPoint(GetWorld(), GetActorLocation(), 5, FColor::Red, false, 3);
-
 }
 
 void AACTProjectile_Base::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
-{
-	print(FColor::Blue, "I overlap!");
-	
+{	
 	OtherActor->TakeDamage(damage, damageType, pInstigator, pFromWeapon);
-
 }
