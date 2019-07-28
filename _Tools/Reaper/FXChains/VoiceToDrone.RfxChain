@@ -1,0 +1,12 @@
+BYPASS 0 0
+<JS loser/amplitudeModulator ""
+  1000.000000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+>
+WAK 0
+BYPASS 1 0
+<VST "VST: ReaVerbate (Cockos)" reaverbate.dll 0 "" 1920361016
+  OGJ2cu9e7f4CAAAAAQAAAAAAAAACAAAAAAAAAAIAAAABAAAAAAAAAAIAAAAAAAAAKAAAAAAAAAAAABAA
+  776t3g3wrd7vOzU/AAAAAHU9YT4QkVo98KfGPWHB/TpZ3hM+P6ECPQ==
+  AAAQAAAA
+>
+WAK 0
