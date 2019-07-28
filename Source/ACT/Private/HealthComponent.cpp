@@ -45,8 +45,13 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	if (GetOwner()->Role == ROLE_Authority && bShouldRegenerate)
 	{
 		Server_AddHealth(amountToRegeneratePerSec * DeltaTime, true);
-		if (currentHealth[currentHealth.Num() - 1] == maxHealthPerSegment)
-			bShouldRegenerate = false;
+
+		bShouldRegenerate = false;
+		for (int i = 0; i < currentHealth.Num(); ++i)
+		{
+			if (currentHealth[i] != maxHealthPerSegment && currentHealth[i] != 0)
+				bShouldRegenerate = true;
+		}
 	}
 }
 
