@@ -135,7 +135,7 @@ public:
 	void Multi_UpdateLookRotation(FRotator value);
 
 	// Weapon Actions
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void RequestWeaponFire();
 
 	UFUNCTION(Server, unreliable, WithValidation)
