@@ -29,6 +29,7 @@ struct MoveBehaviorParameter
 	float maxAngularAcceleration;	// angular acceleration (rotation)
 	float maxSpeed;	// max speed of the character
 	float maxRotation;	// max rotation speed
+	float maxPrediction; // holds the maximum prediction time
 
 	// radia params
 	float targetRadius; // radius at which the movement is considered as succesful
@@ -100,6 +101,19 @@ public:
 	//SteeringOutput getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee = false);
 };
 
+// UMoveBehavior_Pursue-----------------------------------------------------------------------------------------------------------------
+UCLASS()
+class ACT_API UMoveBehavior_PursueEvade : public UMoveBehavior_SeekFlee
+{
+	GENERATED_BODY()
+
+public:
+	// returns the desired steering output
+	virtual SteeringOutput getSteering(const MoveBehaviorParameter& moveParam) override;
+	virtual SteeringOutput getSteeringReversed(const MoveBehaviorParameter& moveParam) override;
+	SteeringOutput getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee = false);
+};
+
 // UBTTask_MoveToWithBehavior ----------------------------------------------------------------------------------------------------------------
 UCLASS()
 class ACT_API UBTTask_MoveToWithBehavior : public UBTTask_BlackboardBase
@@ -123,6 +137,9 @@ private:
 	// timer over which to achieve target speed
 	UPROPERTY(Category = Node, EditAnywhere, meta = (ClampMin = "0.0001", UIMin = "0.0001"))
 	float timeToTarget = 50;
+	// holds the maximum prediction time
+	UPROPERTY(Category = Node, EditAnywhere, meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float maxPrediction = 10;
 
 	// Enable to use the alternate behavior e.g. flee of seek&flee
 	UPROPERTY(Category = Node, EditAnywhere)

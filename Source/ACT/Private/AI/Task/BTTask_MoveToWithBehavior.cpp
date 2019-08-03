@@ -55,7 +55,7 @@ SteeringOutput UMoveBehavior_SeekFlee::getSteeringCombined(const MoveBehaviorPar
 		print(FColor::Red, "max Acceleration is too small (maxAcceleration > 0)");
 		return steering;
 	}
-
+	
 	// check if there is a valid vector available in case there is no target actor
 	if (moveParam.pTarget == nullptr)
 	{
@@ -293,7 +293,7 @@ SteeringOutput UMoveBehavior_Align::getSteeringCombined(const MoveBehaviorParame
 	return steering;
 }
 
-// UMoveBehavior_Align ----------------------------------------------------------------------------------------------------------------
+// UMoveBehavior_VelocityMatch ----------------------------------------------------------------------------------------------------------------
 SteeringOutput UMoveBehavior_VelocityMatch::getSteering(const MoveBehaviorParameter& moveParam)
 {
 	SteeringOutput steering;	// create the structure to hold our output
@@ -335,6 +335,63 @@ SteeringOutput UMoveBehavior_VelocityMatch::getSteering(const MoveBehaviorParame
 	return steering;
 }
 
+// UMoveBehavior_PursueEvade ----------------------------------------------------------------------------------------------------------------
+SteeringOutput UMoveBehavior_PursueEvade::getSteering(const MoveBehaviorParameter& moveParam)
+{
+	return getSteeringCombined(moveParam, false);
+}
+
+SteeringOutput UMoveBehavior_PursueEvade::getSteeringReversed(const MoveBehaviorParameter& moveParam)
+{
+	return getSteeringCombined(moveParam, true);
+}
+
+SteeringOutput UMoveBehavior_PursueEvade::getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee)
+{
+	SteeringOutput steering;	// create the structure to hold our output
+
+	// check needed params
+	if (moveParam.pCharacter == nullptr)
+	{
+		print(FColor::Red, "missing charater");
+		return steering;
+	}
+	if (moveParam.maxPrediction <= 0)
+	{
+		print(FColor::Red, "max Prediction is too small (maxPrediction > 0)");
+		return steering;
+	}
+
+	// check if there is a valid vector available in case there is no target actor
+	if (moveParam.pTarget == nullptr)
+	{
+		print(FColor::Red, "missing target");
+		return steering;
+	}
+
+	// calculate the distance to target
+	float distance = (moveParam.pTarget->GetActorLocation() - moveParam.pCharacter->GetActorLocation()).Size();
+
+	// calculate AI's current speed
+	float speed = moveParam.pCharacter->GetVelocity().Size();
+
+	// check if speed is too small to give a reasonable prediction time
+	// otherwise calculate the prediction time
+	float prediction = 0;
+	if (speed <= distance / moveParam.maxPrediction)
+		prediction = moveParam.maxPrediction;
+	else
+		prediction = distance / speed;
+
+	// put the target together
+	MoveBehaviorParameter moveParamForSeek;
+	moveParamForSeek = moveParam;
+	moveParamForSeek.pTarget = NULL;
+	moveParamForSeek.targetLoction = moveParam.pTarget->GetActorLocation() + (moveParam.pTarget->GetVelocity() * prediction);
+
+	// return steering
+	return UMoveBehavior_SeekFlee::getSteeringCombined(moveParamForSeek, bFlee);
+}
 
 // UBTTask_MoveToWithBehavior ----------------------------------------------------------------------------------------------------------------
 UBTTask_MoveToWithBehavior::UBTTask_MoveToWithBehavior()
@@ -429,6 +486,7 @@ void UBTTask_MoveToWithBehavior::updateMoveParam(UBehaviorTreeComponent& OwnerCo
 	moveParam.maxAngularAcceleration = moveParam.maxAcceleration;
 	moveParam.maxSpeed = moveParam.pCharacter->GetCharacterMovement()->GetMaxSpeed();
 	moveParam.maxRotation = moveParam.maxSpeed;
+	moveParam.maxPrediction = maxPrediction;
 
 	// update radia params
 	moveParam.targetRadius = targetRadius; // radius at which the movement is considered as succesful
