@@ -87,6 +87,19 @@ public:
 	SteeringOutput getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee = false);
 };
 
+// UMoveBehavior_VelocityMatch-----------------------------------------------------------------------------------------------------------------
+UCLASS()
+class ACT_API UMoveBehavior_VelocityMatch : public UMoveBehavior_Base
+{
+	GENERATED_BODY()
+
+public:
+	// returns the desired steering output
+	virtual SteeringOutput getSteering(const MoveBehaviorParameter& moveParam) override;
+	//virtual SteeringOutput getSteeringReversed(const MoveBehaviorParameter& moveParam) override;
+	//SteeringOutput getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee = false);
+};
+
 // UBTTask_MoveToWithBehavior ----------------------------------------------------------------------------------------------------------------
 UCLASS()
 class ACT_API UBTTask_MoveToWithBehavior : public UBTTask_BlackboardBase

@@ -293,6 +293,48 @@ SteeringOutput UMoveBehavior_Align::getSteeringCombined(const MoveBehaviorParame
 	return steering;
 }
 
+// UMoveBehavior_Align ----------------------------------------------------------------------------------------------------------------
+SteeringOutput UMoveBehavior_VelocityMatch::getSteering(const MoveBehaviorParameter& moveParam)
+{
+	SteeringOutput steering;	// create the structure to hold our output
+
+	// check needed params
+	if (moveParam.pCharacter == nullptr)
+	{
+		print(FColor::Red, "missing charater");
+		return steering;
+	}
+	if (moveParam.maxAcceleration <= 0)
+	{
+		print(FColor::Red, "max Acceleration is too small (maxAcceleration > 0)");
+		return steering;
+	}
+
+	// check if there is a valid vector available in case there is no target actor
+	if (moveParam.pTarget == nullptr)
+	{
+		print(FColor::Red, "missing target");
+		return steering;
+	}
+
+	// Acceleration tries to get to the target velocity
+	steering.linear = moveParam.pTarget->GetVelocity() - moveParam.pCharacter->GetVelocity();
+	steering.linear /= moveParam.timeToTarget;
+
+	// Check if the acceleration is too fast (will be done by AddMovementInput)
+	/*if (steering.linear.Size() > moveParam.maxAcceleration)
+	{
+		steering.linear.Normalize();
+		steering.linear *= moveParam.maxAcceleration;
+	}*/
+
+	// turning is not needed
+	steering.angular = 0;
+
+	// return steering
+	return steering;
+}
+
 
 // UBTTask_MoveToWithBehavior ----------------------------------------------------------------------------------------------------------------
 UBTTask_MoveToWithBehavior::UBTTask_MoveToWithBehavior()
