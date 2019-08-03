@@ -239,17 +239,18 @@ SteeringOutput UMoveBehavior_Align::getSteeringCombined(const MoveBehaviorParame
 	// get the naive direction to the target
 	float rotation = moveParam.pTarget->GetViewRotation().Yaw - moveParam.pCharacter->GetViewRotation().Yaw;
 	if (rotation > 180)
-		rotation -= 360;// +rotation;
-	print(FColor::Cyan, GetName() + " rotation: " + FString::SanitizeFloat(rotation) + " || " + FString::SanitizeFloat(moveParam.pTarget->GetViewRotation().Yaw) + " || " + FString::SanitizeFloat(moveParam.pCharacter->GetViewRotation().Yaw));
+		rotation -= 360;
+	//print(FColor::Cyan, GetName() + " rotation: " + FString::SanitizeFloat(rotation) + " || " + FString::SanitizeFloat(moveParam.pTarget->GetViewRotation().Yaw) + " || " + FString::SanitizeFloat(moveParam.pCharacter->GetViewRotation().Yaw));
 	//print(FColor::Blue, GetName() + " rotation: " + FString::SanitizeFloat(rotation));
 
 	// map the result to the (-pi, pi) interval
 	//rotation = FMath::GetMappedRangeValueClamped({ -180.0f, 180.0f }, { -PI, PI }, rotation);
 	//rotation = FMath::GetMappedRangeValueClamped({ 0.0f, 360.0f }, { -PI, PI }, rotation);
 	//rotation = FMath::GetMappedRangeValueClamped({ 0.0f, 360.0f }, { -1, 1 }, rotation);
-	print(FColor::Blue, GetName() + " rotationClamped: " + FString::SanitizeFloat(rotation));
+	//rotation = FMath::GetMappedRangeValueClamped({ 0.0f, 360.0f }, { -180.0f, 180.0f }, rotation);
+	//print(FColor::Blue, GetName() + " rotationClamped: " + FString::SanitizeFloat(rotation));
 	float rotationSize = FMath::Abs(rotation);
-	print(FColor::Green, GetName() + " rotationSize: " + FString::SanitizeFloat(rotationSize));
+	//print(FColor::Green, GetName() + " rotationSize: " + FString::SanitizeFloat(rotationSize));
 
 	// check if we are there, return no steering
 	if (rotationSize < moveParam.targetRadius)
@@ -265,11 +266,11 @@ SteeringOutput UMoveBehavior_Align::getSteeringCombined(const MoveBehaviorParame
 	// otherwise calculate a scaled rotation
 	else
 		targetRotation = moveParam.maxRotation * rotationSize / moveParam.slowRadius;
-	print(FColor::Yellow, GetName() + " targetRotation(Raw): " + FString::SanitizeFloat(targetRotation));
+	//print(FColor::Yellow, GetName() + " targetRotation(Raw): " + FString::SanitizeFloat(targetRotation));
 
 	// the final target rotation combines speed (already in the variable) and direction
 	targetRotation *= rotation / rotationSize;
-	print(FColor::Yellow, GetName() + " targetRotation(final): " + FString::SanitizeFloat(targetRotation));
+	//print(FColor::Yellow, GetName() + " targetRotation(final): " + FString::SanitizeFloat(targetRotation));
 
 	// Acceleration tries to get to the target rotation
 	steering.angular = targetRotation - moveParam.pCharacter->GetViewRotation().Yaw;
@@ -282,7 +283,7 @@ SteeringOutput UMoveBehavior_Align::getSteeringCombined(const MoveBehaviorParame
 		steering.angular /= angularAcceleration;
 		steering.angular *= moveParam.maxAngularAcceleration;
 	}
-	print(FColor::Red, GetName() + " steering.angular: " + FString::SanitizeFloat(steering.angular));
+	//print(FColor::Red, GetName() + " steering.angular: " + FString::SanitizeFloat(steering.angular));
 
 	// skip linear steering
 	steering.linear = (FVector)(0, 0, 0);
