@@ -23,6 +23,8 @@ struct MoveBehaviorParameter
 	AACTCharacter* pCharacter = nullptr;
 	AACTCharacter* pTarget = nullptr;
 	FVector targetLoction = { 0,0,0 };
+	//FVector targetDirection = { 0,0,0 };
+	float targetDirection = 0;
 
 	// character params
 	float maxAcceleration;	// linear acceleration (direction)
@@ -84,8 +86,6 @@ class ACT_API UMoveBehavior_Align : public UMoveBehavior_Base
 public:
 	// returns the desired steering output
 	virtual SteeringOutput getSteering(const MoveBehaviorParameter& moveParam) override;
-	virtual SteeringOutput getSteeringReversed(const MoveBehaviorParameter& moveParam) override;
-	SteeringOutput getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee = false);
 };
 
 // UMoveBehavior_VelocityMatch-----------------------------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ public:
 	//SteeringOutput getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee = false);
 };
 
-// UMoveBehavior_Pursue-----------------------------------------------------------------------------------------------------------------
+// UMoveBehavior_PursueEvade -----------------------------------------------------------------------------------------------------------------
 UCLASS()
 class ACT_API UMoveBehavior_PursueEvade : public UMoveBehavior_SeekFlee
 {
@@ -112,6 +112,17 @@ public:
 	virtual SteeringOutput getSteering(const MoveBehaviorParameter& moveParam) override;
 	virtual SteeringOutput getSteeringReversed(const MoveBehaviorParameter& moveParam) override;
 	SteeringOutput getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee = false);
+};
+
+// UMoveBehavior_Face -----------------------------------------------------------------------------------------------------------------
+UCLASS()
+class ACT_API UMoveBehavior_Face : public UMoveBehavior_Align
+{
+	GENERATED_BODY()
+
+public:
+	// returns the desired steering output
+	virtual SteeringOutput getSteering(const MoveBehaviorParameter& moveParam) override;
 };
 
 // UBTTask_MoveToWithBehavior ----------------------------------------------------------------------------------------------------------------

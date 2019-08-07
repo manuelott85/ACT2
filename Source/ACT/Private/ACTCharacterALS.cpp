@@ -55,7 +55,7 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	LookingRotationArrow->SetupAttachment(Arrows);
 	LookingRotationArrow->ArrowColor = FColor(0, 214, 255, 255);
 	LookingRotationArrow->ArrowSize = 0.75;
-	LookingRotationArrow->bUseInEditorScaling = false;
+	//LookingRotationArrow->bUseInEditorScaling = false;
 	LookingRotationArrow->RelativeLocation = FVector(0, 0, 150);
 	LookingRotationArrow->bAbsoluteRotation = true;
 
@@ -63,7 +63,7 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	TargetRotationArrow->SetupAttachment(Arrows);
 	TargetRotationArrow->ArrowColor = FColor(255, 156, 0, 255);
 	TargetRotationArrow->ArrowSize = 0.75;
-	TargetRotationArrow->bUseInEditorScaling = false;
+	//TargetRotationArrow->bUseInEditorScaling = false;
 	TargetRotationArrow->RelativeLocation = FVector(0, 0, 90);
 	TargetRotationArrow->bAbsoluteRotation = true;
 
@@ -71,14 +71,14 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	CharacterRotationArrow->SetupAttachment(Arrows);
 	CharacterRotationArrow->ArrowColor = FColor(0, 255, 0, 255);
 	CharacterRotationArrow->ArrowSize = 0.75;
-	CharacterRotationArrow->bUseInEditorScaling = false;
+	//CharacterRotationArrow->bUseInEditorScaling = false;
 	CharacterRotationArrow->RelativeLocation = FVector(0, 0, 90);
 	CharacterRotationArrow->bAbsoluteRotation = true;
 
 	MovementInputArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("MovementInputArrow"));
 	MovementInputArrow->SetupAttachment(Arrows);
 	MovementInputArrow->ArrowColor = FColor(255, 255, 0, 255);
-	MovementInputArrow->bUseInEditorScaling = false;
+	//MovementInputArrow->bUseInEditorScaling = false;
 	MovementInputArrow->RelativeLocation = FVector(0, 0, 0.6);
 	MovementInputArrow->RelativeScale3D = FVector(1, 1.75, 0);
 	MovementInputArrow->bAbsoluteRotation = true;
@@ -86,7 +86,7 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	LastMovementInputRotationArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("LastMovementInputRotationArrow"));
 	LastMovementInputRotationArrow->SetupAttachment(Arrows);
 	LastMovementInputRotationArrow->ArrowColor = FColor(137, 137, 0, 255);
-	LastMovementInputRotationArrow->bUseInEditorScaling = false;
+	//LastMovementInputRotationArrow->bUseInEditorScaling = false;
 	LastMovementInputRotationArrow->RelativeLocation = FVector(0, 0, 0.4);
 	LastMovementInputRotationArrow->RelativeScale3D = FVector(1, 1.75, 0);
 	LastMovementInputRotationArrow->bAbsoluteRotation = true;
@@ -94,7 +94,7 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	VelocityArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("VelocityArrow"));
 	VelocityArrow->SetupAttachment(Arrows);
 	VelocityArrow->ArrowColor = FColor(255, 0, 255, 255);
-	VelocityArrow->bUseInEditorScaling = false;
+	//VelocityArrow->bUseInEditorScaling = false;
 	VelocityArrow->RelativeLocation = FVector(0, 0, 0.2);
 	VelocityArrow->RelativeScale3D = FVector(1, 4, 0);
 	VelocityArrow->bAbsoluteRotation = true;
@@ -102,7 +102,7 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	LastVelocityRotationArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("LastVelocityRotationArrow"));
 	LastVelocityRotationArrow->SetupAttachment(Arrows);
 	LastVelocityRotationArrow->ArrowColor = FColor(137, 0, 137, 255);
-	LastVelocityRotationArrow->bUseInEditorScaling = false;
+	//LastVelocityRotationArrow->bUseInEditorScaling = false;
 	LastVelocityRotationArrow->RelativeScale3D = FVector(1, 4, 0);
 	LastVelocityRotationArrow->bAbsoluteRotation = true;
 

@@ -193,16 +193,9 @@ SteeringOutput UMoveBehavior_Arrive::getSteering(const MoveBehaviorParameter& mo
 // UMoveBehavior_Align ----------------------------------------------------------------------------------------------------------------
 SteeringOutput UMoveBehavior_Align::getSteering(const MoveBehaviorParameter& moveParam)
 {
-	return getSteeringCombined(moveParam, false);
-}
+	//print(FColor::Green, GetName() + " direction: " + FString::SanitizeFloat(moveParam.targetDirection.X) + "|" + FString::SanitizeFloat(moveParam.targetDirection.Y) + "|" + FString::SanitizeFloat(moveParam.targetDirection.Z));
 
-SteeringOutput UMoveBehavior_Align::getSteeringReversed(const MoveBehaviorParameter& moveParam)
-{
-	return getSteeringCombined(moveParam, true);
-}
 
-SteeringOutput UMoveBehavior_Align::getSteeringCombined(const MoveBehaviorParameter& moveParam, bool bFlee)
-{
 	SteeringOutput steering;	// create the structure to hold our output
 	bool bUseTargetVector = false;
 
@@ -214,20 +207,31 @@ SteeringOutput UMoveBehavior_Align::getSteeringCombined(const MoveBehaviorParame
 	}
 	if (moveParam.maxRotation <= 0)
 	{
-		print(FColor::Red, "max rotation is too small (zero or less)");
+		print(FColor::Red, "max rotation is too small (less then zero)");
 		return steering;
 	}
 	if (moveParam.targetRadius < 0)
+	{
+		print(FColor::Red, "targetRadius is too small (less then zero)");
 		return steering;
+	}
 	if (moveParam.slowRadius < moveParam.targetRadius)
+	{
+		print(FColor::Red, "slowRadius is too small (can not be smaller than the target radius)");
 		return steering;
+	}
 	if (moveParam.timeToTarget < 0)
+	{
+		print(FColor::Red, "timeToTarget is too small (less then zero)");
 		return steering;
+	}
 
 	// check if there is a valid vector available in case there is no target actor
 	if (moveParam.pTarget == nullptr)
 	{
-		if (moveParam.targetLoction.Size() != 0)
+		//if (moveParam.targetDirection.Size() != 0)
+		//	bUseTargetVector = true;
+		if (moveParam.targetDirection != 0)
 			bUseTargetVector = true;
 		else
 		{
@@ -237,11 +241,14 @@ SteeringOutput UMoveBehavior_Align::getSteeringCombined(const MoveBehaviorParame
 	}
 
 	// get the naive direction to the target
-	float rotation = moveParam.pTarget->GetViewRotation().Yaw - moveParam.pCharacter->GetViewRotation().Yaw;
+	float rotation;
+	if (!bUseTargetVector)
+		rotation = moveParam.pTarget->GetViewRotation().Yaw - moveParam.pCharacter->GetViewRotation().Yaw;
+	else
+		rotation = moveParam.targetDirection;
 	if (rotation > 180)
 		rotation -= 360;
 	//print(FColor::Cyan, GetName() + " rotation: " + FString::SanitizeFloat(rotation) + " || " + FString::SanitizeFloat(moveParam.pTarget->GetViewRotation().Yaw) + " || " + FString::SanitizeFloat(moveParam.pCharacter->GetViewRotation().Yaw));
-	//print(FColor::Blue, GetName() + " rotation: " + FString::SanitizeFloat(rotation));
 
 	// map the result to the (-pi, pi) interval
 	//rotation = FMath::GetMappedRangeValueClamped({ -180.0f, 180.0f }, { -PI, PI }, rotation);
@@ -391,6 +398,31 @@ SteeringOutput UMoveBehavior_PursueEvade::getSteeringCombined(const MoveBehavior
 
 	// return steering
 	return UMoveBehavior_SeekFlee::getSteeringCombined(moveParamForSeek, bFlee);
+}
+
+// UMoveBehavior_Face ----------------------------------------------------------------------------------------------------------------
+SteeringOutput UMoveBehavior_Face::getSteering(const MoveBehaviorParameter& moveParam)
+{
+	SteeringOutput steering;	// create the structure to hold our output
+
+	// calculate the direction to target
+	FVector direction = moveParam.pTarget->GetActorLocation() - moveParam.pCharacter->GetActorLocation();
+	// check for a zero direction, and make no change if so
+	if (direction.Size() == 0)
+	{
+		steering.bDestinationReached = true;
+		return steering;
+	}
+	// put the target together
+	MoveBehaviorParameter moveParamForAlign;
+	moveParamForAlign = moveParam;
+	moveParamForAlign.pTarget = NULL;
+	//moveParamForAlign.targetDirection = direction;
+	moveParamForAlign.targetDirection = atan2(-direction.X, direction.Y);
+
+	//print(FColor::Green, GetName() + " direction: " + FString::SanitizeFloat(direction.X) + "|" + FString::SanitizeFloat(direction.Y) + "|" + FString::SanitizeFloat(direction.Z));
+
+	return UMoveBehavior_Align::getSteering(moveParamForAlign);
 }
 
 // UBTTask_MoveToWithBehavior ----------------------------------------------------------------------------------------------------------------

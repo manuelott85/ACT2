@@ -2,7 +2,7 @@
 
 #include "ACTCharacter.h"
 #include <AIController.h>
-#include <CameraController.h>
+//#include <CameraController.h>
 #include <UnrealNetwork.h>
 #include <Runtime/Engine/Classes/Components/AudioComponent.h>
 #include "Runtime/Engine/Classes/Components/SkeletalMeshComponent.h"
