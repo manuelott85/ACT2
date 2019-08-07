@@ -105,7 +105,7 @@ public:
 	void Multi_PlayCrouchEffects();
 
 	// Handles input for AimDownSights
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void RequestAimDownSights();
 
 	UFUNCTION(Server, unreliable, WithValidation)
