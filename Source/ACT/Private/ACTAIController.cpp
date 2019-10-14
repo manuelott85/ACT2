@@ -13,48 +13,44 @@
 // print(FColor::Blue, FString::SanitizeFloat(temp));
 
 // AACTAIController ----------------------------------------------------------------------------------------------------------------
-void AACTAIController::BeginPlay()
-{
+void AACTAIController::BeginPlay() {
 	// Call the base class  
 	Super::BeginPlay();
 
 	// Run the Behavior Tree if driven by AI
-	if (Role == ROLE_Authority)
-	{
-		if (BTAsset)
+	if (Role == ROLE_Authority) {
+		if (BTAsset) {
 			RunBehaviorTree(BTAsset);
+		}
 	}
 	//FocusInformation.Priorities.SetNum(EAIFocusPriority::Gameplay);
-	FocusInformation.Priorities[EAIFocusPriority::Gameplay].Actor = NewFocus;
+	//FocusInformation.Priorities[EAIFocusPriority::Gameplay].Actor = NewFocus;
 }
 
-void AACTAIController::Tick(float DeltaTime)
-{
+void AACTAIController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 	// Update rotation
 	UpdateRotation(DeltaTime);
 }
 
-void AACTAIController::OnPossess(APawn* InPawn)
-{
+void AACTAIController::OnPossess(APawn* InPawn) {
 	Super::OnPossess(InPawn);
 
 	AACTCharacter* pControlledPawn = Cast<AACTCharacter>(InPawn);
-	if (pControlledPawn != nullptr)
+	if (pControlledPawn != nullptr) {
 		pControlledACTCharacter = pControlledPawn;
+	}
 	print(FColor::Magenta, GetName() + " possed " + pControlledACTCharacter->GetName());
 }
 
-void AACTAIController::OnUnPossess()
-{
+void AACTAIController::OnUnPossess() {
 	Super::OnUnPossess();
 
 	pControlledACTCharacter = nullptr;
 }
 
-void AACTAIController::moveCharacter(SteeringOutput steering)
-{
+void AACTAIController::moveCharacter(SteeringOutput steering) {
 	// Update the position and orientation
 	//position += velocity * time;
 	//orientation += rotation * time;
@@ -67,8 +63,9 @@ void AACTAIController::moveCharacter(SteeringOutput steering)
 	//velocity = velocity.GetClampedToMaxSize(maxspeed);
 	
 	// check the pawn
-	if (pControlledACTCharacter == nullptr)
+	if (pControlledACTCharacter == nullptr) {
 		return;
+	}
 
 	// move the pawn
 	pControlledACTCharacter->AddMovementInput(steering.linear, steering.linear.Size());
@@ -78,8 +75,35 @@ void AACTAIController::moveCharacter(SteeringOutput steering)
 	//print(FColor::Orange, GetName() + " moves " + FString::SanitizeFloat(steering.angular) + " , characterRota: " + FString::SanitizeFloat(pControlledACTCharacter->GetViewRotation().Yaw) + " , controllerRota: " + FString::SanitizeFloat(pControlledACTCharacter->GetControlRotation().Yaw));// +", InputYawScale: " + InputYawScale);
 }
 
-void AACTAIController::UpdateRotation(float DeltaTime)
-{
-	if (!RotationInput.IsNearlyZero())
+void AACTAIController::UpdateRotation(float DeltaTime) {
+	if (!RotationInput.IsNearlyZero()) {
 		pControlledACTCharacter->FaceRotation(RotationInput, DeltaTime);
+	}
+}
+
+void AACTAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePawn) {
+	print(FColor::Blue, "Test");
+	// Copied from AIController:UpdateControlRotation()
+	APawn* const MyPawn = GetPawn();
+	if (MyPawn) {
+		FRotator NewControlRotation = GetControlRotation();
+
+		// Look towards focus
+		const FVector FocalPoint = GetFocalPoint();
+		if (FAISystem::IsValidLocation(FocalPoint)) {
+			NewControlRotation = (FocalPoint - MyPawn->GetPawnViewLocation()).Rotation();
+		} else if (bSetControlRotationFromPawnOrientation) {
+			NewControlRotation = MyPawn->GetActorRotation();
+		}
+
+		SetControlRotation(NewControlRotation);
+
+		if (bUpdatePawn) {
+			const FRotator CurrentPawnRotation = MyPawn->GetActorRotation();
+
+			if (CurrentPawnRotation.Equals(NewControlRotation, 1e-3f) == false) {
+				MyPawn->FaceRotation(NewControlRotation, DeltaTime);
+			}
+		}
+	}
 }

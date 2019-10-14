@@ -48,4 +48,6 @@ public:
 	 * This may then be modified by the PlayerCamera, and is passed to Pawn->FaceRotation().
 	 */
 	virtual void UpdateRotation(float DeltaTime);
+
+	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;
 };
