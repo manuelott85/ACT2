@@ -82,7 +82,6 @@ void AACTAIController::UpdateRotation(float DeltaTime) {
 }
 
 void AACTAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePawn) {
-	print(FColor::Blue, "Test");
 	// Copied from AIController:UpdateControlRotation()
 	APawn* const MyPawn = GetPawn();
 	if (MyPawn) {
