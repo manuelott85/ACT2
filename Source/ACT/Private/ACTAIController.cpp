@@ -18,7 +18,7 @@ void AACTAIController::BeginPlay() {
 	Super::BeginPlay();
 
 	// Run the Behavior Tree if driven by AI
-	if (Role == ROLE_Authority) {
+	if (GetLocalRole() == ROLE_Authority) {
 		if (BTAsset) {
 			RunBehaviorTree(BTAsset);
 		}

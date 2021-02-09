@@ -48,7 +48,7 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	// Arrow Components
 	Arrows = CreateDefaultSubobject<USceneComponent>(TEXT("Arrows"));
 	Arrows->SetupAttachment(GetRootComponent());
-	Arrows->RelativeLocation = FVector(0, 0, -90);
+	Arrows->SetRelativeLocation(FVector(0, 0, -90));
 	Arrows->bHiddenInGame = true;
 
 	LookingRotationArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("LookingRotationArrow"));
@@ -56,55 +56,55 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	LookingRotationArrow->ArrowColor = FColor(0, 214, 255, 255);
 	LookingRotationArrow->ArrowSize = 0.75;
 	//LookingRotationArrow->bUseInEditorScaling = false;
-	LookingRotationArrow->RelativeLocation = FVector(0, 0, 150);
-	LookingRotationArrow->bAbsoluteRotation = true;
+	LookingRotationArrow->SetRelativeLocation(FVector(0, 0, 150));
+	LookingRotationArrow->SetUsingAbsoluteRotation(true);
 
 	TargetRotationArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("TargetRotationArrow"));
 	TargetRotationArrow->SetupAttachment(Arrows);
 	TargetRotationArrow->ArrowColor = FColor(255, 156, 0, 255);
 	TargetRotationArrow->ArrowSize = 0.75;
 	//TargetRotationArrow->bUseInEditorScaling = false;
-	TargetRotationArrow->RelativeLocation = FVector(0, 0, 90);
-	TargetRotationArrow->bAbsoluteRotation = true;
+	TargetRotationArrow->SetRelativeLocation(FVector(0, 0, 90));
+	TargetRotationArrow->SetUsingAbsoluteRotation(true);
 
 	CharacterRotationArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("CharacterRotationArrow"));
 	CharacterRotationArrow->SetupAttachment(Arrows);
 	CharacterRotationArrow->ArrowColor = FColor(0, 255, 0, 255);
 	CharacterRotationArrow->ArrowSize = 0.75;
 	//CharacterRotationArrow->bUseInEditorScaling = false;
-	CharacterRotationArrow->RelativeLocation = FVector(0, 0, 90);
-	CharacterRotationArrow->bAbsoluteRotation = true;
+	CharacterRotationArrow->SetRelativeLocation(FVector(0, 0, 90));
+	CharacterRotationArrow->SetUsingAbsoluteRotation(true);
 
 	MovementInputArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("MovementInputArrow"));
 	MovementInputArrow->SetupAttachment(Arrows);
 	MovementInputArrow->ArrowColor = FColor(255, 255, 0, 255);
 	//MovementInputArrow->bUseInEditorScaling = false;
-	MovementInputArrow->RelativeLocation = FVector(0, 0, 0.6);
-	MovementInputArrow->RelativeScale3D = FVector(1, 1.75, 0);
-	MovementInputArrow->bAbsoluteRotation = true;
+	MovementInputArrow->SetRelativeLocation(FVector(0, 0, 0.6));
+	MovementInputArrow->SetRelativeScale3D(FVector(1, 1.75, 0));
+	MovementInputArrow->SetUsingAbsoluteRotation(true);
 
 	LastMovementInputRotationArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("LastMovementInputRotationArrow"));
 	LastMovementInputRotationArrow->SetupAttachment(Arrows);
 	LastMovementInputRotationArrow->ArrowColor = FColor(137, 137, 0, 255);
 	//LastMovementInputRotationArrow->bUseInEditorScaling = false;
-	LastMovementInputRotationArrow->RelativeLocation = FVector(0, 0, 0.4);
-	LastMovementInputRotationArrow->RelativeScale3D = FVector(1, 1.75, 0);
-	LastMovementInputRotationArrow->bAbsoluteRotation = true;
+	LastMovementInputRotationArrow->SetRelativeLocation(FVector(0, 0, 0.4));
+	LastMovementInputRotationArrow->SetRelativeScale3D(FVector(1, 1.75, 0));
+	LastMovementInputRotationArrow->SetUsingAbsoluteRotation(true);
 
 	VelocityArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("VelocityArrow"));
 	VelocityArrow->SetupAttachment(Arrows);
 	VelocityArrow->ArrowColor = FColor(255, 0, 255, 255);
 	//VelocityArrow->bUseInEditorScaling = false;
-	VelocityArrow->RelativeLocation = FVector(0, 0, 0.2);
-	VelocityArrow->RelativeScale3D = FVector(1, 4, 0);
-	VelocityArrow->bAbsoluteRotation = true;
+	VelocityArrow->SetRelativeLocation(FVector(0, 0, 0.2));
+	VelocityArrow->SetRelativeScale3D(FVector(1, 4, 0));
+	VelocityArrow->SetUsingAbsoluteRotation(true);
 	
 	LastVelocityRotationArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("LastVelocityRotationArrow"));
 	LastVelocityRotationArrow->SetupAttachment(Arrows);
 	LastVelocityRotationArrow->ArrowColor = FColor(137, 0, 137, 255);
 	//LastVelocityRotationArrow->bUseInEditorScaling = false;
-	LastVelocityRotationArrow->RelativeScale3D = FVector(1, 4, 0);
-	LastVelocityRotationArrow->bAbsoluteRotation = true;
+	LastVelocityRotationArrow->SetRelativeScale3D(FVector(1, 4, 0));
+	LastVelocityRotationArrow->SetUsingAbsoluteRotation(true);
 
 	// Camera Setup
 	TP_SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TP_SpringArm"));
@@ -115,7 +115,7 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	TP_SpringArm->bUsePawnControlRotation = true;
 	TP_SpringArm->bEnableCameraLag = true;
 	TP_SpringArm->CameraLagSpeed = 2;
-	TP_SpringArm->bAbsoluteRotation = true;
+	TP_SpringArm->SetUsingAbsoluteRotation(true);
 
 	// Third Person Camera
 	TP_Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TP_Camera"));
@@ -126,7 +126,7 @@ AACTCharacterALS::AACTCharacterALS(const FObjectInitializer& ObjectInitializer)
 	FP_Camera->SetupAttachment(GetRootComponent());
 	FP_Camera->FieldOfView = 100;
 	FP_Camera->bUsePawnControlRotation = true;
-	FP_Camera->RelativeLocation = FVector(0, 0, 60);
+	FP_Camera->SetRelativeLocation(FVector(0, 0, 60));
 	FP_Camera->bAutoActivate = false;
 	FP_Camera->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FirstPersonCameraSocket);
 	

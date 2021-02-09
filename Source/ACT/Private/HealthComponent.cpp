@@ -21,7 +21,7 @@ UHealthComponent::UHealthComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	bReplicates = true;
+	SetIsReplicated(true);
 
 	for (int i = 0; i < amountOfSegments; i++)
 		currentHealth.Push(maxHealthPerSegment);
@@ -42,7 +42,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	// regenerate health
-	if (GetOwner()->Role == ROLE_Authority && bShouldRegenerate)
+	if (GetOwner()->GetLocalRole() == ROLE_Authority && bShouldRegenerate)
 	{
 		Server_AddHealth(amountToRegeneratePerSec * DeltaTime, true);
 

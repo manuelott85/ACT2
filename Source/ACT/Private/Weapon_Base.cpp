@@ -50,8 +50,8 @@ FVector AWeapon_Base::getSightsOffset()
 	// Failsafe code for multiplayer?!
 	if (this == nullptr)
 		return FVector::ZeroVector;
-
-	return cameraPosition->RelativeLocation;
+	
+	return cameraPosition->GetRelativeLocation();
 }
 
 bool AWeapon_Base::FireWeapon(APawn* fireInstigator)
@@ -134,7 +134,7 @@ void AWeapon_Base::PlayFireEffects(FVector TraceEnd)
 }
 
 bool AWeapon_Base::Reload() {
-	if (Role == ROLE_Authority)	{
+	if (GetLocalRole() == ROLE_Authority)	{
 		if (loadedMagazine)
 			loadedMagazine->Destroy();
 

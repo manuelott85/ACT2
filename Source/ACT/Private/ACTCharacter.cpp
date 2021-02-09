@@ -30,8 +30,8 @@ AACTCharacter::AACTCharacter(const FObjectInitializer& ObjectInitializer)
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	bReplicates = true;
-	bReplicateMovement = true;
+	SetReplicates(true);
+	SetReplicatingMovement(true);
 
 	// the next two lines stop the editor from loading up!
 	//static ConstructorHelpers::FClassFinder<AACTAIController> AIController(TEXT("/Game/Blueprints/AI/BP_ACTAIController"));
@@ -43,8 +43,8 @@ AACTCharacter::AACTCharacter(const FObjectInitializer& ObjectInitializer)
 	// Create a CameraComponent
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCamera->SetupAttachment(GetMesh(), "CameraSocket");
-	FirstPersonCamera->RelativeLocation = FVector(0, 18, 0); // Position the camera
-	FirstPersonCamera->RelativeRotation = FRotator(0, 90, -90);	// Rotate the camera
+	FirstPersonCamera->SetRelativeLocation(FVector(0, 18, 0)); // Position the camera
+	FirstPersonCamera->SetRelativeRotation(FRotator(0, 90, -90));	// Rotate the camera
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
 	// Create a gun mesh component
@@ -73,7 +73,7 @@ void AACTCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (Role == ROLE_Authority)
+	if (GetLocalRole() == ROLE_Authority)
 	{
 		// Spawn a default weapon
 		FActorSpawnParameters SpawnParams;
