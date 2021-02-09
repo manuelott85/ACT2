@@ -1,6 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "ACT.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, ACT, "ACT" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, ACT, "ACT");
