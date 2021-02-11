@@ -10,7 +10,7 @@ class ACT_API AACTGameModeBase : public AGameModeBase {
 
 public:
 	AACTGameModeBase();
-	virtual void StartPlay() override;
 
+	//virtual void StartPlay() override;
 	//virtual void PostLogin(APlayerController* NewPlayer) override;
 };

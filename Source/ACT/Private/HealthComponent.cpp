@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "HealthComponent.h"
 
 #include "UnrealNetwork.h"
@@ -10,155 +7,170 @@
 #include "EngineGlobals.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 
-#define print(color, text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 10, color, text)
-// print(FColor::Magenta, FString::FromInt(temp));
-// print(FColor::Blue, FString::SanitizeFloat(temp));
+#include "Core/Logger.h"
+#include "FunctionLibrary.h"
 
-// Sets default values for this component's properties
-UHealthComponent::UHealthComponent()
-{
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
+UHealthComponent::UHealthComponent() {
 	PrimaryComponentTick.bCanEverTick = true;
 
 	SetIsReplicated(true);
-
-	for (int i = 0; i < amountOfSegments; i++)
-		currentHealth.Push(maxHealthPerSegment);
-}
-
-
-// Called when the game starts
-void UHealthComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-
-// Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	// regenerate health
-	if (GetOwner()->GetLocalRole() == ROLE_Authority && bShouldRegenerate)
-	{
-		Server_AddHealth(amountToRegeneratePerSec * DeltaTime, true);
-
-		bShouldRegenerate = false;
-		for (int i = 0; i < currentHealth.Num(); ++i)
-		{
-			if (currentHealth[i] != maxHealthPerSegment && currentHealth[i] != 0)
-				bShouldRegenerate = true;
-		}
-	}
-}
-
-void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	// List of every replicated variable, including a condition if needed
-	DOREPLIFETIME(UHealthComponent, currentHealth);
-}
-
-void UHealthComponent::ResetRegeneration()
-{
-	bShouldRegenerate = false;
-	GetWorld()->GetTimerManager().ClearTimer(regenerationTimer);
-	GetWorld()->GetTimerManager().SetTimer(regenerationTimer, this, &UHealthComponent::RegenerateHealth, timeUntilRegenerationStarts, false);
-
 	return;
 }
 
-void UHealthComponent::RegenerateHealth()
-{
+void UHealthComponent::BeginPlay() {
+	Super::BeginPlay();
+
+	SetMaxHealthPerSegment(GetMaxHealthPerSegment());
+	AddHealthSegments(GetNumberOfSegments());
+	return;
+}
+
+void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	RegenerateHealth(DeltaTime);
+	return;
+}
+
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// List of every replicated variable, including a condition if needed
+	DOREPLIFETIME(UHealthComponent, currentHealthPerSegments);
+	return;
+}
+
+void UHealthComponent::StopRegeneration() {
+	bShouldRegenerate = false;
+	return;
+}
+
+void UHealthComponent::StartRegeneration() {
 	bShouldRegenerate = true;
 	return;
 }
 
-void UHealthComponent::RequestRemoveHealth(float amountHPtoRemove)
-{
+void UHealthComponent::StartRegenerationWithTimer(float timeInSec) {
+	StopRegeneration();
+	GetWorld()->GetTimerManager().ClearTimer(regenerationTimer);
+	GetWorld()->GetTimerManager().SetTimer(regenerationTimer, this, &UHealthComponent::StartRegeneration, timeInSec, false);
+	return;
+}
+
+void UHealthComponent::AddHealthSegments(int amount) {
+	for (int i = 0; i < amount; i++) {
+		currentHealthPerSegments.Push(GetMaxHealthPerSegment());
+	}
+	return;
+}
+
+bool UHealthComponent::ShouldRegenerate() {
+	for (int i = 0; i < currentHealthPerSegments.Num(); ++i) {
+		bool bIsCurrentSegmentAtMaxHealth = currentHealthPerSegments[i] == GetMaxHealthPerSegment();
+		bool bIsCurrentSegmentDead = currentHealthPerSegments[i] <= 0;
+		if (!bIsCurrentSegmentAtMaxHealth && !bIsCurrentSegmentDead) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void UHealthComponent::DebugPrint(FColor color) {
+	bool bIsDead = currentHealthPerSegments[0] == 0;
+	if (bIsDead) {
+		ULogger::Print("Player " + GetOwner()->GetName() + " is dead!", FColor::Red);
+	} else {
+		ULogger::Print("Player " + GetOwner()->GetName() + " - " + FString::SanitizeFloat(GetCurTotalHealth()) + " HP", color, 2.0f);
+	}
+	return;
+}
+
+float UHealthComponent::GetCurTotalHealth() {
+	float totalHp = 0.0f;
+	for (int i = 0; i < currentHealthPerSegments.Num(); i++) {
+		totalHp = totalHp + currentHealthPerSegments[i];
+	}
+	return totalHp;
+}
+
+void UHealthComponent::RequestRemoveHealth(float amountHPtoRemove) {
 	Server_RemoveHealth(amountHPtoRemove);
 	return;
 }
 
-void UHealthComponent::Server_RemoveHealth_Implementation(float amountHPtoRemove)
-{
-	for (int i = currentHealth.Num() - 1; i > -1; i--)
-	{
-		if (currentHealth[i] > 0)
-		{
-			if (amountHPtoRemove > currentHealth[i])
-			{
-				amountHPtoRemove = amountHPtoRemove - currentHealth[i];
-				currentHealth[i] = 0;
-			}
-			else
-			{
-				currentHealth[i] = currentHealth[i] - amountHPtoRemove;
-				break;
-			}
+void UHealthComponent::Server_RemoveHealth_Implementation(float amountHPtoRemove) {
+	for (int i = currentHealthPerSegments.Num() - 1; i > -1; i--) {
+		amountHPtoRemove = RemoveHealthFromSegmentReturnRemaining(i, amountHPtoRemove);
+		if (amountHPtoRemove == 0) {
+			break;
 		}
 	}
 
-	ResetRegeneration();
-
-	for (int i = 0; i < currentHealth.Num(); i++)
-		print(FColor::Red, "Segment #" + FString::FromInt(i) + " - " + FString::SanitizeFloat(currentHealth[i]) + " HP");
-
-	if (currentHealth[0] == 0)
-		print(FColor::Red, "Player " + GetName() + " is dead!");
-
+	StartRegenerationWithTimer(GetTimeUntilRegenerationStarts());
+	DebugPrint(FColor::Red);
 	return;
 }
 
-bool UHealthComponent::Server_RemoveHealth_Validate(float amountHPtoRemove)
-{
-	return true;
+float UHealthComponent::RemoveHealthFromSegmentReturnRemaining(int index, float damage) {
+	float remainingDamage = damage;
+
+	bool bAreHPLeftInCurrentSegment = currentHealthPerSegments[index] > 0;
+	if (bAreHPLeftInCurrentSegment) {
+		bool bDoesHpToRemoveExceedHpOfCurrentSegment = remainingDamage > currentHealthPerSegments[index];
+		if (bDoesHpToRemoveExceedHpOfCurrentSegment) {
+			remainingDamage = damage - currentHealthPerSegments[index];
+			currentHealthPerSegments[index] = 0;
+		} else {
+			currentHealthPerSegments[index] = currentHealthPerSegments[index] - damage;
+			remainingDamage = 0;
+		}
+	}
+	return remainingDamage;
 }
 
-void UHealthComponent::RequestAddHealth(float amountHPtoAdd)
-{
+void UHealthComponent::RequestAddHealth(float amountHPtoAdd) {
 	Server_AddHealth(amountHPtoAdd);
 	return;
 }
 
-void UHealthComponent::Server_AddHealth_Implementation(float amountHPtoAdd, bool bRestrictedToSegment)
-{
-	for (int i = 0; i < currentHealth.Num(); i++)
-	{
-		if (bRestrictedToSegment && currentHealth[i] == 0)
-		{
-			if (i == 0)
-				bShouldRegenerate = false;
+void UHealthComponent::Server_AddHealth_Implementation(float amountHPtoAdd, bool bRestrictedToSegment) {
+	for (int i = 0; i < currentHealthPerSegments.Num(); i++) {
+		bool bAreHPLeftInCurrentSegment = currentHealthPerSegments[i] > 0;
+		if (bRestrictedToSegment && !bAreHPLeftInCurrentSegment) {
+			if (i == 0) {
+				StopRegeneration();
+			}
 			break;
 		}
-
-		if (currentHealth[i] < maxHealthPerSegment)
-		{
-			float missingHP4curSegment = maxHealthPerSegment - currentHealth[i];
-			if (amountHPtoAdd > missingHP4curSegment)
-			{
-				currentHealth[i] = maxHealthPerSegment;
-				amountHPtoAdd = amountHPtoAdd - missingHP4curSegment;
-			}
-			else
-			{
-				currentHealth[i] = currentHealth[i] + amountHPtoAdd;
-				break;
-			}
-		}
+		amountHPtoAdd = AddHealthToSegmentReturnRemaining(i, amountHPtoAdd);
 	}
 
-	for (int i = 0; i < currentHealth.Num(); i++)
-		print(FColor::Green, "Segment #" + FString::FromInt(i) + " - " + FString::SanitizeFloat(currentHealth[i]) + " HP");
-
+	DebugPrint(FColor::Green);
 	return;
 }
 
-bool UHealthComponent::Server_AddHealth_Validate(float amountHPtoAdd, bool bRestrictedToSegment)
-{
-	return true;
+float UHealthComponent::AddHealthToSegmentReturnRemaining(int index, float amountHPtoAdd) {
+	float remainingHealth = amountHPtoAdd;
+
+	bool bCurSegAtMaxHealth = currentHealthPerSegments[index] == GetMaxHealthPerSegment();
+	if (!bCurSegAtMaxHealth) {
+		float missingHp4CurSegment = GetMaxHealthPerSegment() - currentHealthPerSegments[index];
+		bool bDoesAdditionalHpExceedCurSegmentsCapacity = remainingHealth > missingHp4CurSegment;
+		if (bDoesAdditionalHpExceedCurSegmentsCapacity) {
+			currentHealthPerSegments[index] = GetMaxHealthPerSegment();
+			remainingHealth = amountHPtoAdd - missingHp4CurSegment;
+		} else {
+			currentHealthPerSegments[index] = currentHealthPerSegments[index] + amountHPtoAdd;
+			remainingHealth = 0;
+		}
+	}
+	return remainingHealth;
+}
+
+void UHealthComponent::RegenerateHealth(float deltaTime) {
+	if (GetOwner()->GetLocalRole() == ROLE_Authority && bShouldRegenerate) {
+		Server_AddHealth(GetAmountToRegeneratePerSec() * deltaTime, true);
+		bShouldRegenerate = ShouldRegenerate();
+	}
+	return;
 }
