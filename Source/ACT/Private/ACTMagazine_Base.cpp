@@ -1,62 +1,47 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "ACTMagazine_Base.h"
 #include "ACTProjectile_Base.h"
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 
-// Sets default values
-AACTMagazine_Base::AACTMagazine_Base()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+AACTMagazine_Base::AACTMagazine_Base() {
+	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
 	magazineAsset = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magazineAsset"));
 	magazineAsset->SetupAttachment(GetRootComponent());
 }
 
-// Called when the game starts or when spawned
-void AACTMagazine_Base::BeginPlay()
-{
+void AACTMagazine_Base::BeginPlay() {
 	Super::BeginPlay();
 
 	// prefill the magazine
 	currentAmmo.Reserve(maxAmmoCount);
-	loadProjectile(AACTProjectile_Base::StaticClass(), maxAmmoCount);
+	LoadProjectile(AACTProjectile_Base::StaticClass(), maxAmmoCount);
 }
 
-// Called every frame
-void AACTMagazine_Base::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-bool AACTMagazine_Base::loadProjectile(TSubclassOf<AACTProjectile_Base> projectile, int amount)
-{
+bool AACTMagazine_Base::LoadProjectile(TSubclassOf<AACTProjectile_Base> projectile, int amount) {
 	// check for valid input
-	if (amount < 1 || !projectile)
+	bool bNoActualAmountProvided = amount < 1;
+	bool bAmountExceedsMagSize = amount + GetRoundsLoaded() > maxAmmoCount;
+	if (bNoActualAmountProvided || bAmountExceedsMagSize) {
 		return false;
-	
-	// load new rounds into the magazine
-	for (int i = 0; i < amount; i++)
-		currentAmmo.Emplace(projectile);	// push creates the object in the heap first and copies it over into the vector, emplaces creates the object directly in the vector without copying
-		//currentAmmo.Push(projectile);
+	}
 
+	// load new rounds into the magazine
+	for (int i = 0; i < amount; i++) {
+		currentAmmo.Emplace(projectile); // push creates the object in the heap first and copies it over into the vector, emplace creates the object directly in the vector without copying
+	}
 	return true;
 }
 
-TSubclassOf<AACTProjectile_Base> AACTMagazine_Base::removeProjectile()
-{
-	if (currentAmmo.Num() < 1)
+TSubclassOf<AACTProjectile_Base> AACTMagazine_Base::RemoveAndReturnTopMostProjectile() {
+	if (currentAmmo.Num() < 1) {
 		return NULL;
+	}
 
-	// remove the projectile and return its classname for further use
+	// remove the projectile and return its class name for further use
 	return currentAmmo.Pop(false);
 }
 
-int AACTMagazine_Base::getAmmoLeft()
-{
+int AACTMagazine_Base::GetRoundsLoaded() {
 	return currentAmmo.Num();
 }

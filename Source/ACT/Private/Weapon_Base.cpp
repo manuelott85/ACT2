@@ -56,7 +56,7 @@ FVector AWeapon_Base::getSightsOffset()
 
 bool AWeapon_Base::FireWeapon(APawn* fireInstigator)
 {
-	if (!weaponAsset || !loadedMagazine || loadedMagazine->getAmmoLeft() < 1)
+	if (!weaponAsset || !loadedMagazine || loadedMagazine->GetRoundsLoaded() < 1)
 		return false;
 
 	FVector spawnlocation = weaponAsset->GetSocketLocation(muzzleSocket);
@@ -82,7 +82,7 @@ bool AWeapon_Base::FireWeapon(APawn* fireInstigator)
 	RV_Hit.ImpactNormal;  //FVector
 	*/
 
-	TSubclassOf<AACTProjectile_Base> roundToSpawn = loadedMagazine->removeProjectile();	// consume projectile
+	TSubclassOf<AACTProjectile_Base> roundToSpawn = loadedMagazine->RemoveAndReturnTopMostProjectile();	// consume projectile
 
 	AACTProjectile_Base* defaultObject = (AACTProjectile_Base*)roundToSpawn->GetDefaultObject();
 
@@ -90,7 +90,7 @@ bool AWeapon_Base::FireWeapon(APawn* fireInstigator)
 	if (RV_Hit.bBlockingHit && RV_Hit.GetActor())
 		RV_Hit.GetActor()->TakeDamage(defaultObject->damage, damageType, NULL, GetOwner());
 
-	print(FColor::Magenta, "Rounds left: " + FString::FromInt(loadedMagazine->getAmmoLeft()));
+	print(FColor::Magenta, "Rounds left: " + FString::FromInt(loadedMagazine->GetRoundsLoaded()));
 
 	return true;
 }

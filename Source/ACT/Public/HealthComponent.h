@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
 #include "HealthComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -28,6 +29,8 @@ protected:
 
 private:
 	virtual void BeginPlay() override;
+
+	void ValidateEncapsulateFields();
 	bool ShouldRegenerate();
 	void AddHealthSegments(int amount);
 	float RemoveHealthFromSegmentReturnRemaining(int index, float damage);

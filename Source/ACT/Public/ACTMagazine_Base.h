@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,35 +9,30 @@ class AACTProjectile_Base;
 class UStaticMeshComponent;
 
 UCLASS()
-class ACT_API AACTMagazine_Base : public AActor
-{
+class ACT_API AACTMagazine_Base : public AActor {
 	GENERATED_BODY()
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* magazineAsset;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float maxAmmoCount = 30;
+		UStaticMeshComponent* magazineAsset;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<TSubclassOf<AACTProjectile_Base>> currentAmmo;
-	
-public:	
-	// Sets default values for this actor's properties
+		TArray<TSubclassOf<AACTProjectile_Base>> currentAmmo;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float maxAmmoCount = 30;
+
+public:
 	AACTMagazine_Base();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+public:
 	UFUNCTION()
-	bool loadProjectile(TSubclassOf<AACTProjectile_Base> projectile, int amount = 1);
+		bool LoadProjectile(TSubclassOf<AACTProjectile_Base> projectile, int amount = 1);
 	UFUNCTION()
-	TSubclassOf<AACTProjectile_Base> removeProjectile();
+		TSubclassOf<AACTProjectile_Base> RemoveAndReturnTopMostProjectile();
 	UFUNCTION()
-	int getAmmoLeft();
+		int GetRoundsLoaded();
 };

@@ -6,9 +6,7 @@
 
 #include "EngineGlobals.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
-
 #include "Core/Logger.h"
-#include "FunctionLibrary.h"
 
 UHealthComponent::UHealthComponent() {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -20,9 +18,17 @@ UHealthComponent::UHealthComponent() {
 void UHealthComponent::BeginPlay() {
 	Super::BeginPlay();
 
-	SetMaxHealthPerSegment(GetMaxHealthPerSegment());
+	ValidateEncapsulateFields();
 	AddHealthSegments(GetNumberOfSegments());
 	return;
+}
+
+void UHealthComponent::ValidateEncapsulateFields() {
+	SetMaxHealthPerSegment(GetMaxHealthPerSegment());
+	SetNumberOfSegments(GetNumberOfSegments());
+	SetCanRegenerate(GetCanRegenerate());
+	SetTimeUntilRegenerationStarts(GetTimeUntilRegenerationStarts());
+	SetAmountToRegeneratePerSec(GetAmountToRegeneratePerSec());
 }
 
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
