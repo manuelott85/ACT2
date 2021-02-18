@@ -17,9 +17,9 @@ class ACT_API UACTCharacterMovementComponent : public UCharacterMovementComponen
 public:
 	/** The maximum ground speed when walking. Also determines maximum lateral speed when falling. */
 	UPROPERTY(Replicated, Category = "Character Movement: Walking", EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
-	float MaxSprintSpeed = 1200;
+	float _maxSprintSpeed = 1200;
 
 	/** The maximum ground speed when walking while aiming down the sights. */
-	UPROPERTY(Category = "Character Movement: Walking", EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
-	float MaxWalkSpeedAiming = 400;
+	UPROPERTY(Replicated, Category = "Character Movement: Walking", EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
+	float _maxWalkSpeedAiming = 400;
 };

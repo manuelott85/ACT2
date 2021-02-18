@@ -8,5 +8,6 @@ void UACTCharacterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	// List of every replicated variable, including a condition if needed
-	DOREPLIFETIME(UACTCharacterMovementComponent, MaxSprintSpeed);
+	DOREPLIFETIME(UACTCharacterMovementComponent, _maxSprintSpeed);
+	DOREPLIFETIME(UACTCharacterMovementComponent, _maxWalkSpeedAiming);
 }

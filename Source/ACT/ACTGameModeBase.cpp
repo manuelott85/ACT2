@@ -5,17 +5,18 @@
 
 AACTGameModeBase::AACTGameModeBase() {
 	// Get Blueprint References
-	static ConstructorHelpers::FClassFinder<APawn> _PlayerPawn(TEXT("/Game/Blueprints/BP_MainCharacter"));
-	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawn(TEXT("/Game/AdvancedLocomotionV3/Blueprints/MannequinCharacter"));
-	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawn(TEXT("/Game/Blueprints/BP_MainCharacter_SWAT"));
-	static ConstructorHelpers::FClassFinder<APlayerController> _PlayerController(TEXT("/Game/Blueprints/BP_PlayerController"));
+	//static ConstructorHelpers::FClassFinder<APawn> _playerPawn(TEXT("/Game/Blueprints/BP_MainCharacter"));
+	static ConstructorHelpers::FClassFinder<APawn> _playerPawn(TEXT("/Game/Blueprints/BP_Soldier"));
+	//static ConstructorHelpers::FClassFinder<APawn> _playerPawn(TEXT("/Game/AdvancedLocomotionV3/Blueprints/MannequinCharacter"));
+	//static ConstructorHelpers::FClassFinder<APawn> _playerPawn(TEXT("/Game/Blueprints/BP_MainCharacter_SWAT"));
+	static ConstructorHelpers::FClassFinder<APlayerController> _playerController(TEXT("/Game/Blueprints/BP_PlayerController"));
 
 	// Set default classes
-	DefaultPawnClass = _PlayerPawn.Class;
+	DefaultPawnClass = _playerPawn.Class;
 	GameSessionClass;
 	GameStateClass;
 	HUDClass;
-	PlayerControllerClass = _PlayerController.Class;
+	PlayerControllerClass = _playerController.Class;
 	PlayerStateClass;
 	SpectatorClass;
 

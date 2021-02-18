@@ -93,7 +93,9 @@ void AACTCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateCameraPos(DeltaTime);
-	Server_UpdateLookRotation();
+	if (HasAuthority()) {
+		Server_UpdateLookRotation();
+	}
 }
 
 void AACTCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -229,7 +231,7 @@ void AACTCharacter::RequestAimDownSights()
 			ForceStopSprint();
 
 		Server_SetAimsDownSights(true);
-		GetCharacterMovement()->MaxWalkSpeed = ((UACTCharacterMovementComponent*)GetCharacterMovement())->MaxWalkSpeedAiming;	// apply aim speed (owning Client)
+		GetCharacterMovement()->MaxWalkSpeed = ((UACTCharacterMovementComponent*)GetCharacterMovement())->_maxWalkSpeedAiming;	// apply aim speed (owning Client)
 	}
 }
 
@@ -240,7 +242,7 @@ void AACTCharacter::Server_SetAimsDownSights_Implementation(bool value)
 
 	//Multi_PlayCrouchEffects();	// Play some sound on all machines
 	if (value)
-		GetCharacterMovement()->MaxWalkSpeed = ((UACTCharacterMovementComponent*)GetCharacterMovement())->MaxWalkSpeedAiming;	// apply aim speed (Server)
+		GetCharacterMovement()->MaxWalkSpeed = ((UACTCharacterMovementComponent*)GetCharacterMovement())->_maxWalkSpeedAiming;	// apply aim speed (Server)
 	else
 		GetCharacterMovement()->MaxWalkSpeed = maxWalkSpeedStored;	// Reset walk speed to the stored one (Server)
 }
@@ -328,7 +330,7 @@ void AACTCharacter::RequestSprint()
 		RequestAimDownSights();
 
 	Server_SetIsSprinting(true);
-	GetCharacterMovement()->MaxWalkSpeed = Cast<UACTCharacterMovementComponent>(GetCharacterMovement())->MaxSprintSpeed;	// apply sprint speed (Client)
+	GetCharacterMovement()->MaxWalkSpeed = Cast<UACTCharacterMovementComponent>(GetCharacterMovement())->_maxSprintSpeed;	// apply sprint speed (Client)
 }
 
 void AACTCharacter::ForceStopSprint()
@@ -341,7 +343,7 @@ void AACTCharacter::Server_SetIsSprinting_Implementation(bool value)
 {
 	bIsSprinting = value;
 	//Multi_PlayCrouchEffects();	// Play some sound on all machines	
-	float sprintSpeed = Cast<UACTCharacterMovementComponent>(GetCharacterMovement())->MaxSprintSpeed;
+	float sprintSpeed = Cast<UACTCharacterMovementComponent>(GetCharacterMovement())->_maxSprintSpeed;
 	if (value)
 		GetCharacterMovement()->MaxWalkSpeed = sprintSpeed;	// apply sprint speed (Server)
 	else

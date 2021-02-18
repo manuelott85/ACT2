@@ -15,8 +15,7 @@ class UHealthComponent;
 class AController;
 
 UCLASS()
-class ACT_API AACTCharacter : public ACharacter
-{
+class ACT_API AACTCharacter : public ACharacter {
 	GENERATED_BODY()
 
 private:
@@ -28,59 +27,59 @@ private:
 
 protected:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
-	AWeapon_Base* PrimaryWeapon;
+		AWeapon_Base* PrimaryWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
-	TSubclassOf<AWeapon_Base> StarterWeaponClass;
+		TSubclassOf<AWeapon_Base> StarterWeaponClass;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
-	FName WeaponAttachSocketName;
+		FName WeaponAttachSocketName;
 
 	// First person camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
-	UCameraComponent* FirstPersonCamera;
+		UCameraComponent* FirstPersonCamera;
 
 	// How much time should the camera need to reach a new position (used for aiming down the sights)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	float animTime = 0.25;
+		float animTime = 0.25;
+
+	// Aim Alpha is a timeline value from 0.0 to 1.0
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		float aimAlpha = 0;
 
 	// FP Audio Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
-	UAudioComponent* FirstPersonAudioSource;
+		UAudioComponent* FirstPersonAudioSource;
 
 	// TP Audio Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
-	UAudioComponent* ThirdPersonAudioSource;
+		UAudioComponent* ThirdPersonAudioSource;
 
 	// Sounds
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	USoundBase* CrouchSound;
+		USoundBase* CrouchSound;
 
 	// Code-Hook to drive animations
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Movement")
-	bool bIsCrouching = false;
+		bool bIsCrouching = false;
 
 	// Code-Hook to drive animations
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Movement")
-	bool bAimsDownSights = false;
+		bool bAimsDownSights = false;
 
 	// Code-Hook to drive animations
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Movement")
-	bool bIsSprinting = false;
+		bool bIsSprinting = false;
 
 	// Code-Hook to drive animations, is updated via multicast
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
-	FRotator lookRotation;
+		FRotator lookRotation;
 
-	// Aim Alpha is a timeline value from 0.0 to 1.0
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	float aimAlpha = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	UHealthComponent* HealthComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+		UHealthComponent* HealthComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* reloadAnimMontage;
+		UAnimMontage* reloadAnimMontage;
 
 public:
 	// Called when the game starts or when spawned
@@ -88,70 +87,70 @@ public:
 
 	// Handles input for moving forward and backward.
 	UFUNCTION()
-	void MoveForward(float Value);
+		void MoveForward(float Value);
 
 	// Handles input for moving right and left.
 	UFUNCTION()
-	void MoveRight(float Value);
+		void MoveRight(float Value);
 
 	// Handles input for crouching
 	UFUNCTION()
-	void RequestCrouch();
+		void RequestCrouch();
 
 	UFUNCTION(Server, unreliable, WithValidation)
-	void Server_SetIsCrouching(bool value);
+		void Server_SetIsCrouching(bool value);
 
 	UFUNCTION(NetMulticast, unreliable, WithValidation)
-	void Multi_PlayCrouchEffects();
+		void Multi_PlayCrouchEffects();
 
 	// Handles input for AimDownSights
 	UFUNCTION(BlueprintCallable)
-	void RequestAimDownSights();
+		void RequestAimDownSights();
 
 	UFUNCTION(Server, unreliable, WithValidation)
-	void Server_SetAimsDownSights(bool value);
+		void Server_SetAimsDownSights(bool value);
 
 	UFUNCTION(Client, unreliable)
-	void Client_ResetCameraAnimTimer();
+		void Client_ResetCameraAnimTimer();
 
 	UFUNCTION()
-	void UpdateCameraPos(float DeltaTime);
+		void UpdateCameraPos(float DeltaTime);
 
 	// Handles input for sprinting
 	UFUNCTION()
-	void RequestSprint();
+		void RequestSprint();
 
 	UFUNCTION()
-	void ForceStopSprint();
+		void ForceStopSprint();
 
 	UFUNCTION(Server, unreliable, WithValidation)
-	void Server_SetIsSprinting(bool value);
+		void Server_SetIsSprinting(bool value);
 
 	// Reblicate the controller rotation
 	UFUNCTION(Server, unreliable, WithValidation)
-	void Server_UpdateLookRotation();
+		void Server_UpdateLookRotation();
 
 	UFUNCTION(NetMulticast, unreliable, WithValidation)
-	void Multi_UpdateLookRotation(FRotator value);
+		void Multi_UpdateLookRotation(FRotator value);
 
 	// Weapon Actions
 	UFUNCTION(BlueprintCallable)
-	void RequestWeaponFire();
+		void RequestWeaponFire();
 
 	UFUNCTION(Server, unreliable, WithValidation)
-	void Server_WeaponFire();
+		void Server_WeaponFire();
 
 	UFUNCTION(NetMulticast, unreliable, WithValidation)
-	void Multi_WeaponFire();
+		void Multi_WeaponFire();
 
 	UFUNCTION()
-	void RequestReload();
+		void RequestReload();
 
 	UFUNCTION(Server, unreliable, WithValidation)
-	void Server_Reload();
+		void Server_Reload();
 
 	UFUNCTION(NetMulticast, unreliable, WithValidation)
-	void Multi_ReloadEffects();
+		void Multi_ReloadEffects();
 
 public:
 	// Sets default values for this character's properties
